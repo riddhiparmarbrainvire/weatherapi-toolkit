@@ -1,24 +1,47 @@
-import logo from './logo.svg';
-import './App.css';
+import { getWeather } from "./redux/weatherSlice";
+import { getCityName } from "./redux/weatherSlice";
+import Card from "./Card";
+import { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 
 function App() {
+  const [weatherData, setWeatherData] = useState([]);
+  const [searchInput, setSearchInput] = useState("mumbai");
+  const dispatch = useDispatch();
+  const dataNew = useSelector(state => state?.weather?.data);
+
+  const handleChange = e => {
+    setSearchInput(e.target.value);
+    dispatch(getCityName(e.target.value));
+  };
+
+  useEffect(() => {
+    dispatch(getWeather(searchInput));
+  }, [dispatch]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <>
+      <div className="search-button-div">
+        <input
+          placeholder="search here"
+          className="weather-search-input"
+          type="text"
+          onChange={handleChange}
+          value={searchInput}
+        />
+        <button
+          onClick={() => {
+            dispatch(getWeather());
+            setSearchInput("");
+          }}
+          className="search-button"
         >
-          Learn React
-        </a>
-      </header>
-    </div>
+          Get weather
+        </button>
+      </div>
+
+      <Card apiData={dataNew} />
+    </>
   );
 }
 
